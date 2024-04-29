@@ -1,0 +1,122 @@
+ 
+Criando tabela de usuario
++++++++++++++++++++++++++++++++++++++++
+ CREATE TABLE nwsoft.usuarios (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+	cpf VARCHAR(11) NOT NULL;
+    senha VARCHAR(100) NOT NULL,
+    perfil VARCHAR(20) NOT NULL,
+	email varchar(100) NOT NULL;
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
+
++++++++++++++++++++++++++++++++++++++++
+
+Inserindo o primeiro usuario
+
+INSERT INTO nwsoft.usuarios
+(cpf, senha, perfil,nome)
+VALUES(06630436385, '123456', 'admin','luan Araujo');
+
++++++++++++++++++++++++++++++++++++++++
+
+
+
+criando tabela de estoque
+
+ CREATE TABLE nwsoft.estoque (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+	valor REAL NOT NULL
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
+
+ 
+INSERT INTO nwsoft.estoque
+(nome, tipo)
+VALUES('cabo', 'produto');
+
+
+INSERT INTO nwsoft.estoque
+(nome, tipo)
+VALUES('conserto', 'servico');
+
+
+
++++++++++++++++++++++++++++++++++++++++
+criando tabela de vendas 
+
+
+CREATE TABLE nwsoft.vendas (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    pedido INT (50) NOT NULL,
+    valor_total REAL NOT NULL,
+    vendedor VARCHAR(50) NOT NULL,
+    payload JSON NOT NULL,
+	vendido BIGINT(1) NOT NULL;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
++++++++++++++++++++++++++++++++++++++++
+
+Criando procedure para fazer validação dos dados cadastrais dos usuarios
+
+
+
+
+CREATE PROCEDURE cadastrar_usuario(
+    IN p_cpf VARCHAR(14),
+    IN p_nome VARCHAR(100),
+    IN p_senha VARCHAR(100),
+    IN p_perfil VARCHAR(20),
+    IN p_email VARCHAR(100),
+    OUT p_resultado VARCHAR(100)
+)
+BEGIN
+    IF p_cpf IS NULL OR p_nome IS NULL OR p_senha IS NULL OR p_email IS NULL THEN
+        SET p_resultado = 'Todos os campos sao obrigatorios';
+    ELSEIF EXISTS (SELECT 1 FROM nwsoft.usuarios WHERE cpf = p_cpf) THEN
+        SET p_resultado = 'CPF ja cadastrado';
+    ELSEIF EXISTS (SELECT 1 FROM nwsoft.usuarios WHERE email = p_email) THEN
+        SET p_resultado = 'E-mail ja cadastrado';
+    ELSE
+        INSERT INTO nwsoft.usuarios (cpf, senha, perfil, nome, email)
+        VALUES (p_cpf, p_nome, p_senha, p_perfil, p_email);
+        SET p_resultado = 'Usuario cadastrado com sucesso';
+    END IF;
+END 
+
+
+
+CALL cadastrar_usuario('06632536383', '45465456', 'vendedor', 'teste', 'teste@gmail.com', @resultado)
+
++++++++++++++++++++++++++++++++++++++++
+Select  das tabelas
+
+select * from usuarios 
+select * from vendas 
+ select * from estoque
++++++++++++++++++++++++++++++++++++++++
+
+trigger de nao permitir que o estoquinsta faça vendas 
+
+CREATE TRIGGER verifica_perfil_estoque
+BEFORE INSERT ON nwsoft.vendas
+FOR EACH ROW
+BEGIN
+    DECLARE v_perfil VARCHAR(20);
+
+    SELECT perfil INTO v_perfil FROM nwsoft.usuarios WHERE id = NEW.vendedor;
+
+    IF v_perfil = 'estoquista' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Não é permitido inserir vendas para vendedores com perfil de estoque.{retorno da trigger}';
+    END IF;
+END

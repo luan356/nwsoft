@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Item</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <style>
+      .space-top {
+        margin-top: 20px;
+      }
+      body {
+        position: relative;
+      }
+      /* Adicionando estilos para alinhar o botão no canto superior direito */
+      .container {
+        position: relative;
+      }
+      .botao {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="panel panel-default">
+        <div class="col text-star">
+          <a
+            id="hom"
+            href="home.html"
+            class="btn btn-primary space-top home-button"
+            ><img src="img/house.svg" alt="home" width="24" height="24"
+          /></a>
+        </div>
+        <br />
+        <div class="panel-heading">
+          <div class="logo-container"></div>
+          Cadastrar Itens
+        </div>
+        <div class="space-top"></div>
+        <form id="pst" action="CadastroEstoque.php" method="POST">
+          <input
+            type="text"
+            name="nome"
+            placeholder="Digite o Item"
+            class="form-control"
+          /><br />
+          <input
+            type="number"
+            name="valor"
+            placeholder="Digite o Valor"
+            class="form-control"
+          /><br />
+          <div class="container mt-5">
+            <div class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Selecione uma opção
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    onclick="document.getElementById('tipo').value = 'produto';"
+                  >
+                    Produto
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    onclick="document.getElementById('tipo').value = 'servico';"
+                  >
+                    Serviço
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <input type="hidden" id="tipo" name="tipo" value="" />
+            <br /><br /><br />
+            <button type="submit" class="btn btn-success">Cadastrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      function getUrlParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      const conectionId = getUrlParam("conection");
+      const profileId = getUrlParam("prfl");
+
+      const form = document.querySelector("#pst");
+      const linkhome = document.querySelector("#hom");
+
+      if (conectionId) {
+        form.action += `?conection=${conectionId}&prfl=${profileId}`;
+        linkhome.href += `?conection=${conectionId}&prfl=${profileId}`;
+      }
+    </script>
+  </body>
+</html>
