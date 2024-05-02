@@ -32,7 +32,12 @@
           LOGIN
         </div>
 
-        <form id="pst" action="CadastroUsuario.php" method="POST">
+        <form
+          id="pst"
+          action="CadastroUsuario.php"
+          method="POST"
+          onsubmit="return validarFormulario()"
+        >
           <input
             type="text"
             name="nome"
@@ -107,6 +112,16 @@
       }
 
       $(".cpf-mask").mask("000.000.000-00");
+
+      function validarFormulario() {
+        var email = document.querySelector('input[name="email"]').value;
+        var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!regex.test(email)) {
+          alert("Email inválido!");
+          return false;
+        }
+        return true;
+      }
     </script>
   </body>
 </html>
